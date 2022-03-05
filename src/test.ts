@@ -1,9 +1,9 @@
-import { Table } from './db/dbConfig'
-import { getAll } from './db/dynamo'
+import { getAll, insert, update } from './db/db'
+import { Menu, Table } from './db/types'
 
 async function main(): Promise<void> {
-  const result = await getAll(Table.CategoryProduct)
-  console.log(require('util').inspect(result, false, null, true))
+  await update<Menu>(Table.Menu, 'newId', { menuName: 'myNewMenu!' })
+  // console.log(require('util').inspect(params, false, null, true))
 }
 
 main()

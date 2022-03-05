@@ -1,17 +1,26 @@
+export enum Table {
+  Menu,
+  Category,
+  Product,
+
+  CategoryMenu,
+  CategoryProduct,
+}
+
 export type Id = string
-export interface DObject extends Record<string, any> {
+export interface IdObject {
   id: Id
 }
 
-export interface Menu extends DObject {
+export interface Menu extends IdObject {
   menuName: string
 }
 
-export interface Category extends DObject {
+export interface Category extends IdObject {
   category: string
 }
 
-export interface Product extends DObject {
+export interface Product extends IdObject {
   title: string
   image: string
   description: string
@@ -20,12 +29,12 @@ export interface Product extends DObject {
   // Kami: fix DProduct response to match schema
 }
 
-export interface CategoryMenu extends DObject {
+export interface CategoryMenu extends IdObject {
   menuId: string
   categoryId: string
 }
 
-export interface CategoryProduct extends DObject {
+export interface CategoryProduct extends IdObject {
   productId: string
   categoryId: string
 }
