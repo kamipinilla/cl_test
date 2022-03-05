@@ -1,6 +1,5 @@
 import aws from 'aws-sdk'
-import { getEnvVar } from '../env'
-import { Obj } from '../utils'
+import { getEnvVar, Obj } from '../utils'
 import { Id, Table } from './types'
 import { getAttrCount } from '../utils'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
