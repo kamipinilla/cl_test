@@ -1,4 +1,4 @@
-import { getEnvVar } from './env'
+import { getEnvVar } from '../env'
 
 export enum Table {
   Menu = 'Menu',
