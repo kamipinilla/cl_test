@@ -1,6 +1,7 @@
 import aws from 'aws-sdk'
 import { getEnvVar, Obj } from '../utils'
-import { Id, Table } from './types'
+import { Table } from './tables/types'
+import { Id } from '../types'
 import { getAttrCount } from '../utils'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
@@ -33,13 +34,14 @@ export function getTableName(table: Table): string {
   }
 }
 
+type ObjAttrs = Array<{ name: string, value: any }>
 export function getUpdateParams(table: Table, id: Id, update: Obj): DocumentClient.UpdateItemInput {
   if (getAttrCount(update) === 0) {
     throw Error("Can't generate params for empty update")
   }
 
   const valuePrefix = ':v'
-  const attrs: Array<{ name: string, value: any }> = []
+  const attrs: ObjAttrs = []
   for (const attrName in update) {
     const attrValue = update[attrName]
     attrs.push({
@@ -59,7 +61,7 @@ export function getUpdateParams(table: Table, id: Id, update: Obj): DocumentClie
   }
 }
 
-function getUpdateExpression(attrs: Array<{ name: string, value: any }>, valuePrefix: string): string {
+function getUpdateExpression(attrs: ObjAttrs, valuePrefix: string): string {
   let updateExpression = 'set'
   for (const [index, attr] of attrs.entries()) {
     updateExpression += ` ${attr.name} = ${valuePrefix}${index}`
@@ -70,7 +72,7 @@ function getUpdateExpression(attrs: Array<{ name: string, value: any }>, valuePr
   return updateExpression
 }
 
-function getExpressionAttributeValues(attrs: Array<{ name: string, value: any }>, valuePrefix: string): Obj {
+function getExpressionAttributeValues(attrs: ObjAttrs, valuePrefix: string): Obj {
   const expressionAttributeValues: Obj = {}
   for (const [index, attr] of attrs.entries()) {
     const attrExpression = `${valuePrefix}${index}`

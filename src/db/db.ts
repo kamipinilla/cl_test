@@ -1,6 +1,7 @@
 import dynamo, { getUpdateParams, getTableName } from './dynamo'
-import { IdObject, Id, Table } from './types'
+import { IdObject, Id } from '../types'
 import { getAttrCount } from '../utils'
+import { Table } from './tables/types'
 
 export async function update<T extends IdObject>(table: Table, id: Id, update: Partial<T>): Promise<void> {
   if (update.id) {

@@ -1,12 +1,3 @@
-export enum Table {
-  Menu,
-  Category,
-  Product,
-
-  CategoryMenu,
-  CategoryProduct,
-}
-
 export type Id = string
 export interface IdObject {
   id: Id

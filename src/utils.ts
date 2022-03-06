@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid'
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -16,6 +17,10 @@ export function getAttrCount(object: Object): number {
     count++
   }
   return count
+}
+
+export function generateId(): string {
+  return uuid()
 }
 
 export type Obj = Record<string, any>
