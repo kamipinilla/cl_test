@@ -7,10 +7,12 @@ import { ExternalProduct, getExternalProducts } from './externalProducts'
 import { Category, Id, Product } from './types'
 
 async function main() {
+  console.log('Started.')
   const externalProducts = await getExternalProducts()
   await createCategories(externalProducts)
   await linkCategoriesToMenu(externalProducts)
   await processProducts(externalProducts)
+  console.log('Done.')
 }
 
 main()
