@@ -31,7 +31,7 @@ async function exists(table: Table, id: Id): Promise<boolean> {
   const tableName = getTableName(table)
   const response = await dynamo.get({
     TableName: tableName,
-    Key: { id }
+    Key: { id },
   }).promise()
   const item = response.Item
   return item !== undefined
@@ -48,5 +48,17 @@ export async function insert<T extends IdObject>(table: Table, object: T): Promi
     }).promise()
   } else {
     throw Error(`Duplicate id: ${id}`)
+  }
+}
+
+export async function del(table: Table, id: Id): Promise<void> {
+  const tableName = getTableName(table)
+  if (await exists(table, id)) {
+    await dynamo.delete({
+      TableName: tableName,
+      Key: { id },
+    }).promise()
+  } else {
+    throw Error(`Object with id ${id} doesn't exist`)
   }
 }

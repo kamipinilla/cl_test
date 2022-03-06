@@ -1,14 +1,16 @@
 import { createCategory, getAllCategories } from './db/tables/category'
 import { linkCategoryToMenu } from './db/tables/categoryMenu'
+import { linkProductAndCategory } from './db/tables/categoryProduct'
 import { getCategoriesForMenu } from './db/tables/menu'
+import { createProduct, getAllProducts } from './db/tables/products'
 import { ExternalProduct, getExternalProducts } from './externalProducts'
-import { Category, CategoryMenu, Id, Product } from './types'
+import { Category, Id, Product } from './types'
 
 async function main() {
   const externalProducts = await getExternalProducts()
   await createCategories(externalProducts)
   await linkCategoriesToMenu(externalProducts)
-  // await processProducts(externalProducts)
+  await processProducts(externalProducts)
 }
 
 main()
@@ -49,13 +51,44 @@ async function linkCategoriesToMenu(externalProducts: ExternalProduct[]): Promis
   await Promise.all(linkCategoriesToMenu)
 }
 
-// async function processProducts(externalProducts: ExternalProduct[]): Promise<void> {
-//   const allProducts = await getAllProducts()
-//   const productsToCreate = getProductsToCreate(allProducts, externalProducts)
-//   await createProducts(productsToCreate)
-//   const createdProductsIds = productsToCreate.map(product => product.id)
-//   await linkCategoriesAndProducts(createdProductsIds, externalProducts)
+async function linkProductsToCategories(productsIds: Id[], externalProducts: ExternalProduct[]): Promise<void>  {
+  const productsIdsSet = new Set<Id>(productsIds)
+  const externalProductsToLink = externalProducts.filter(externalProduct => productsIdsSet.has(externalProduct.getId()))
 
-//   const productsToUpdate = getProductsToUpdate(allProducts, externalProducts)
-//   await updateProducts(productsToUpdate)
-// }
+  const linkProductsToCategories: Promise<void>[] = []
+  for (const externalProductToLink of externalProductsToLink) {
+    const productId = externalProductToLink.getId()
+    const categoryId = externalProductToLink.getCategory()
+    linkProductsToCategories.push(linkProductAndCategory(productId, categoryId))
+  }
+  await Promise.all(linkProductsToCategories)
+}
+
+async function processProducts(externalProducts: ExternalProduct[]): Promise<void> {
+  const allProducts = await getAllProducts()
+  const productsToCreate = getProductsToCreate(allProducts, externalProducts)
+  await createProducts(productsToCreate)
+  const createdProductsIds = productsToCreate.map(product => product.id)
+  await linkProductsToCategories(createdProductsIds, externalProducts)
+
+  // const productsToUpdate = getProductsToUpdate(allProducts, externalProducts)
+  // await updateProducts(productsToUpdate)
+}
+
+function getProductsToCreate(allProducts: Product[], externalProducts: ExternalProduct[]): Product[] {
+  const allProductsIdsSet = new Set<Id>(allProducts.map(product => product.id))
+
+  const productsToCreate = externalProducts
+    .filter(externalProduct => !allProductsIdsSet.has(externalProduct.getId()))
+    .map(externalProduct => externalProduct.getProduct())
+
+  return productsToCreate
+}
+
+async function createProducts(products: Product[]): Promise<void> {
+  const createProducts: Promise<void>[] = []
+  for (const product of products) {
+    createProducts.push(createProduct(product))
+  }
+  await Promise.all(createProducts)
+}
