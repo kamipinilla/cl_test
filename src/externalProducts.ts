@@ -1,5 +1,5 @@
 import { get } from './rest'
-import { Product } from './types'
+import { Id, Product } from './types'
 
 interface SourceExternalProduct {
   id: number
@@ -26,7 +26,7 @@ export class ExternalProduct {
     return this.source.category
   }
 
-  public getId(): string {
+  public getId(): Id {
     return this.source.id.toString()
   }
 

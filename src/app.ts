@@ -2,7 +2,7 @@ import { createCategory, getAllCategories } from './db/tables/category'
 import { linkCategoryToMenu } from './db/tables/categoryMenu'
 import { linkProductAndCategory } from './db/tables/categoryProduct'
 import { getCategoriesForMenu } from './db/tables/menu'
-import { createProduct, getAllProducts } from './db/tables/products'
+import { createProduct, getAllProducts, updateProduct } from './db/tables/product'
 import { ExternalProduct, getExternalProducts } from './externalProducts'
 import { Category, Id, Product } from './types'
 
@@ -70,9 +70,43 @@ async function processProducts(externalProducts: ExternalProduct[]): Promise<voi
   await createProducts(productsToCreate)
   const createdProductsIds = productsToCreate.map(product => product.id)
   await linkProductsToCategories(createdProductsIds, externalProducts)
+  await updateProducts(allProducts, externalProducts)
+}
 
-  // const productsToUpdate = getProductsToUpdate(allProducts, externalProducts)
-  // await updateProducts(productsToUpdate)
+async function updateProducts(allProducts: Product[], externalProducts: ExternalProduct[]): Promise<void> {
+  await updateIntersectionProducts(allProducts, externalProducts)
+  await updateDifferenceProducts(allProducts, externalProducts)
+}
+
+async function updateIntersectionProducts(allProducts: Product[], externalProducts: ExternalProduct[]): Promise<void> {
+  const allProductsIdsSet = new Set<string>(allProducts.map(product => product.id))
+  const intersectionExternalProducts = externalProducts.filter(externalProduct => allProductsIdsSet.has(externalProduct.getId()))
+  
+  const intersectionProductUpdates: Promise<void>[] = []
+  for (const externalProduct of intersectionExternalProducts) {
+    const productId = externalProduct.getId()
+    const productUpdate = externalProduct.getProduct()
+
+    intersectionProductUpdates.push(updateProduct(productId, productUpdate))
+  }
+  await Promise.all(intersectionProductUpdates)
+}
+
+async function updateDifferenceProducts(allProducts: Product[], externalProducts: ExternalProduct[]): Promise<void> {
+  const externalProductsIdsSet = new Set<Id>(externalProducts.map(externalProduct => externalProduct.getId()))
+
+  const differenceProductsIds = allProducts
+    .map(product => product.id)
+    .filter(productId => !externalProductsIdsSet.has(productId))
+  
+  const differenceProductUpdates: Promise<void>[] = []
+  const productUpdate: Partial<Product> = {
+    hidden: true,
+  }
+  for (const productId of differenceProductsIds) {
+    differenceProductUpdates.push(updateProduct(productId, productUpdate))
+  }
+  await Promise.all(differenceProductUpdates)
 }
 
 function getProductsToCreate(allProducts: Product[], externalProducts: ExternalProduct[]): Product[] {
