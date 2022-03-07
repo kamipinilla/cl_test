@@ -8,6 +8,7 @@ async function main(): Promise<void> {
   const list = await getAll(Table.CategoryProduct)
   console.log(list)
   // console.log(require('util').inspect(params, false, null, true))
+  // Kami: del
 }
 
 main()

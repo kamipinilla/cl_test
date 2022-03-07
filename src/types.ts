@@ -17,7 +17,6 @@ export interface Product extends IdObject {
   description: string
   price: number
   hidden: boolean
-  // Kami: fix DProduct response to match schema
 }
 
 export interface CategoryMenu extends IdObject {
