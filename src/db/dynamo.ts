@@ -127,7 +127,7 @@ export function getQueryParams(table: Table, query: Obj): DocumentClient.QueryIn
   
   const params: DocumentClient.QueryInput = {
     TableName: getTableName(table),
-    KeyConditionExpression: queryExpression,
+    FilterExpression: queryExpression,
     ExpressionAttributeValues: expressionAttributeValues,
   }
 

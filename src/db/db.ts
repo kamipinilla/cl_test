@@ -36,15 +36,13 @@ export async function getAll<T extends IdObject>(table: Table): Promise<T[]> {
   const response = await dynamo.scan({
     TableName: tableName
   }).promise()
-  // Kami: when does it return undefined?
   const items = response.Items
   return items as T[]
 }
 
 export async function query<T extends IdObject>(table: Table, filter: Partial<T>): Promise<T[]> {
   const queryParams = getQueryParams(table, filter)
-  const response = await dynamo.query(queryParams).promise()
-  // Kami: when does it return undefined?
+  const response = await dynamo.scan(queryParams).promise()
   const items = response.Items
   return items as T[]
 }
@@ -68,7 +66,6 @@ async function exists(table: Table, id: Id): Promise<boolean> {
 export async function insert<T extends IdObject>(table: Table, object: T): Promise<void> {
   const tableName = getTableName(table)
   const id = object.id
-  // Kami: add linter require await rule
   if (!await exists(table, id)) {
     await dynamo.put({
       TableName: tableName,
