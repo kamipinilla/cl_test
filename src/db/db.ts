@@ -41,12 +41,18 @@ async function getAll<T extends IdObject>(table: Table): Promise<T[]> {
   return items as T[]
 }
 
-export async function getMany<T extends IdObject>(table: Table, filter: Partial<T>): Promise<T[]> {
+export async function query<T extends IdObject>(table: Table, filter: Partial<T>): Promise<T[]> {
   const queryParams = getQueryParams(table, filter)
   const response = await dynamo.query(queryParams).promise()
   // Kami: when does it return undefined?
   const items = response.Items
   return items as T[]
+}
+
+export async function getWhereIdIn<T extends IdObject>(table: Table, ids: Id[]): Promise<T[]> {
+  const idsSet = new Set<Id>(ids)
+  const items = (await getAll<T>(table)).filter(item => idsSet.has(item.id))
+  return items
 }
 
 async function exists(table: Table, id: Id): Promise<boolean> {
