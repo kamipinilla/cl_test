@@ -6,4 +6,4 @@ async function main(): Promise<void> {
   console.log(inspect(menuReport, false, null, true))
 }
 
-// main()
+main()

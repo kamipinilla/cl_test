@@ -31,7 +31,7 @@ export async function get<T extends IdObject>(table: Table, id: Id): Promise<T> 
   }
 }
 
-async function getAll<T extends IdObject>(table: Table): Promise<T[]> {
+export async function getAll<T extends IdObject>(table: Table): Promise<T[]> {
   const tableName = getTableName(table)
   const response = await dynamo.scan({
     TableName: tableName

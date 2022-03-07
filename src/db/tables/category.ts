@@ -1,5 +1,5 @@
 import { Id, Product, Category, CategoryProduct } from '../../types'
-import { query, insert, getWhereIdIn } from '../db'
+import { query, insert, getWhereIdIn, getAll } from '../db'
 import { Table } from './types'
 
 export async function getProductsForCategory(categoryId: Id): Promise<Product[]> {
