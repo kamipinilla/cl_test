@@ -45,7 +45,7 @@ async function getCategoryReport(category: Category): Promise<CategoryReport> {
   const productsReport = await getProductsReport(category.id)
 
   return {
-    categoryName: category.category,
+    categoryName: category.name,
     products: productsReport,
   }
 }

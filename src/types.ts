@@ -8,7 +8,7 @@ export interface Menu extends IdObject {
 }
 
 export interface Category extends IdObject {
-  category: string
+  name: string
 }
 
 export interface Product extends IdObject {

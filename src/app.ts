@@ -28,7 +28,7 @@ async function createCategories(externalProducts: ExternalProduct[]): Promise<vo
   for (const categoryString of categoriesToCreateUnique) {
     const category: Category = {
       id: categoryString,
-      category: categoryString,
+      name: categoryString,
     }
     createCategories.push(createCategory(category))
   }
