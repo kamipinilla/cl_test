@@ -49,10 +49,6 @@ function toObjAttrs(object: Obj): ObjAttrs {
   return attrs
 }
 
-function getValuePrefix(): string {
-  return ':v'
-}
-
 export function getUpdateParams(table: Table, id: Id, update: Obj): DocumentClient.UpdateItemInput {
   if (getAttrCount(update) === 0) {
     throw Error("Can't generate params for empty update")
@@ -90,6 +86,8 @@ function addReservedAttributeNames(
   params.ExpressionAttributeNames = reservedAttributeNames
 }
 
+const valuePrefix = ':v'
+
 function getUpdateExpression(attrs: ObjAttrs): string {
   let updateExpression = 'set'
   for (const [index, attr] of attrs.entries()) {
@@ -98,7 +96,7 @@ function getUpdateExpression(attrs: ObjAttrs): string {
     if (dynamoReservedWords.has(attrName)) {
       attrNameExpression = `#${attrNameExpression}`
     }
-    updateExpression += ` ${attrNameExpression} = ${getValuePrefix()}${index}`
+    updateExpression += ` ${attrNameExpression} = ${valuePrefix}${index}`
     if (index !== attrs.length - 1) {
       updateExpression += ','
     }
@@ -109,7 +107,7 @@ function getUpdateExpression(attrs: ObjAttrs): string {
 function getExpressionAttributeValues(attrs: ObjAttrs): Obj {
   const expressionAttributeValues: Obj = {}
   for (const [index, attr] of attrs.entries()) {
-    const attrExpression = `${getValuePrefix()}${index}`
+    const attrExpression = `${valuePrefix}${index}`
     expressionAttributeValues[attrExpression] = attr.value
   }
   return expressionAttributeValues
@@ -146,7 +144,7 @@ function getQueryExpression(attrs: ObjAttrs): string {
     if (dynamoReservedWords.has(attrName)) {
       attrNameExpression = `#${attrNameExpression}`
     }
-    updateExpression += `${attrNameExpression} = ${getValuePrefix()}${index}`
+    updateExpression += `${attrNameExpression} = ${valuePrefix}${index}`
     if (index !== attrs.length - 1) {
       updateExpression += ', '
     }
