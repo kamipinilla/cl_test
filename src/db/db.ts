@@ -17,6 +17,20 @@ export async function update<T extends IdObject>(table: Table, id: Id, update: P
   }
 }
 
+export async function get<T extends IdObject>(table: Table, id: Id): Promise<T> {
+  const tableName = getTableName(table)
+  const response = await dynamo.get({
+    TableName: tableName,
+    Key: { id },
+  }).promise()
+  const item = response.Item
+  if (item !== undefined) {
+    return item as T
+  } else {
+    throw Error(`Object with id ${id} not found`)
+  }
+}
+
 export async function getAll<T extends IdObject>(table: Table): Promise<T[]> {
   const tableName = getTableName(table)
   const response = await dynamo.scan({

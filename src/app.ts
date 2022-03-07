@@ -1,21 +1,20 @@
 import { createCategory, getAllCategories } from './db/tables/category'
 import { linkCategoryToMenu } from './db/tables/categoryMenu'
 import { linkProductAndCategory } from './db/tables/categoryProduct'
-import { getCategoriesForMenu } from './db/tables/menu'
+import { getCategoriesForMenu, getMenuId } from './db/tables/menu'
 import { createProduct, getAllProducts, updateProduct } from './db/tables/product'
 import { ExternalProduct, getExternalProducts } from './externalProducts'
+import { getMenuReport, MenuReport } from './report'
 import { Category, Id, Product } from './types'
 
-async function main() {
-  console.log('Started.')
+export default async function app(): Promise<MenuReport> {
   const externalProducts = await getExternalProducts()
   await createCategories(externalProducts)
   await linkCategoriesToMenu(externalProducts)
   await processProducts(externalProducts)
-  console.log('Done.')
+  const menuReport = await getMenuReport()
+  return menuReport
 }
-
-main()
 
 async function createCategories(externalProducts: ExternalProduct[]): Promise<void> {
   const allCategories = await getAllCategories()
@@ -37,7 +36,7 @@ async function createCategories(externalProducts: ExternalProduct[]): Promise<vo
 }
 
 async function linkCategoriesToMenu(externalProducts: ExternalProduct[]): Promise<void> {
-  const menuId = '3de2e09e-ff44-4c14-8918-562f68f8afb7'
+  const menuId = getMenuId()
   const categoriesForMenu = await getCategoriesForMenu(menuId)
   const categoriesIdsForMenuSet = new Set<Id>(categoriesForMenu.map(category => category.id))
 
