@@ -1,5 +1,5 @@
 import { Category, CategoryMenu, Id, Menu } from '../../types'
-import { Table } from './types'
+import { Table } from './tables'
 import { get, getWhereIdIn, query } from '../db'
 
 export function getMenuId(): Id {

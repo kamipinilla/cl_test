@@ -1,6 +1,6 @@
 import { Id, Product } from '../../types'
 import { getAll, insert, update } from '../db'
-import { Table } from './types'
+import { Table } from './tables'
 
 export async function getAllProducts(): Promise<Product[]> {
   const products = await getAll<Product>(Table.Product)
