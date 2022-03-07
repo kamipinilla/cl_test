@@ -52,7 +52,8 @@ async function getCategoryReport(category: Category): Promise<CategoryReport> {
 
 async function getProductsReport(categoryId: Id): Promise<ProductReport[]> {
   const productsForCategory = await getProductsForCategory(categoryId)
-  const productsReport = await Promise.all(productsForCategory.map(async product => await getProductReport(product, categoryId)))
+  const notHiddenProducts = productsForCategory.filter(product => !product.hidden)
+  const productsReport = await Promise.all(notHiddenProducts.map(async product => await getProductReport(product, categoryId)))
   return productsReport
 }
 
