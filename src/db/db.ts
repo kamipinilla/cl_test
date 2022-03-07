@@ -1,4 +1,4 @@
-import dynamo, { getUpdateParams, getTableName } from './dynamo'
+import dynamo, { getUpdateParams, getTableName, getQueryParams } from './dynamo'
 import { IdObject, Id } from '../types'
 import { getAttrCount } from '../utils'
 import { Table } from './tables/types'
@@ -31,11 +31,19 @@ export async function get<T extends IdObject>(table: Table, id: Id): Promise<T> 
   }
 }
 
-export async function getAll<T extends IdObject>(table: Table): Promise<T[]> {
+async function getAll<T extends IdObject>(table: Table): Promise<T[]> {
   const tableName = getTableName(table)
   const response = await dynamo.scan({
     TableName: tableName
   }).promise()
+  // Kami: when does it return undefined?
+  const items = response.Items
+  return items as T[]
+}
+
+export async function getMany<T extends IdObject>(table: Table, filter: Partial<T>): Promise<T[]> {
+  const queryParams = getQueryParams(table, filter)
+  const response = await dynamo.query(queryParams).promise()
   // Kami: when does it return undefined?
   const items = response.Items
   return items as T[]
