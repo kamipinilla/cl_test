@@ -1,13 +1,10 @@
 import { Id, Product, Category, CategoryProduct } from '../../types'
-import { getAll, insert } from '../db'
+import { getMany, insert } from '../db'
 import { Table } from './types'
 
 export async function getProductsForCategory(categoryId: Id): Promise<Product[]> {
-  const productsIdsForMenuSet = new Set<Id>(
-    (await getAll<CategoryProduct>(Table.CategoryProduct))
-      .filter(categoryProduct => categoryProduct.categoryId === categoryId)
-      .map(categoryProduct => categoryProduct.productId)
-  )
+  const categoriesProducts = await getMany<CategoryProduct>(Table.CategoryProduct, { categoryId })
+  const productsIdsForMenuSet = new Set<Id>(categoriesProducts.map(categoryProduct => categoryProduct.productId))
 
   const productsForCategory = (await getAll<Product>(Table.Product))
     .filter(product => productsIdsForMenuSet.has(product.id))
